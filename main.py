@@ -32,6 +32,15 @@ def writeBlankFile(outputPath, container, filename):
     for elem in container:
         outputfile.write(elem)
     outputfile.close()    
+    
+def countLinesInFile(path, filename):
+    count = 0
+    f = open(path + os.sep + filename, 'r')
+    for elem in f:
+        print elem
+        count += 1
+    f.close()
+    return count
 
 if __name__ == "__main__":
     debugFlag = False
@@ -121,3 +130,6 @@ if __name__ == "__main__":
     writeBlankFile(outputdir, passmarkcontainer, inputfile + "_passmarker.txt")
                 
     jmlcreate.createJML(outputdir, inputfile +"_objects.jml", objemarkcontainer, seqdelem, inputfile + errorFileName)
+    
+    print "\nEine Fehlerdatei: %s wurde geschrieben!\n" % \
+        (outputdir + os.sep + inputfile + errorFileName)
