@@ -8,11 +8,30 @@ import os
 
 import jmlcreate
 
+def writeFotoMarker(outputPath, container, filename, fileNameError):
+    outputfile = open(outputPath + os.sep + filename, 'w')
+    for elem in container:
+        elem = elem.strip()
+        elems = elem.split(",")
+        if len(elems) == 5:
+            himmelUndGrad = elems[4].split(" ")
+            if len(himmelUndGrad) == 2:
+                line = elems[0] + "," + elems[1] + "," + elems[2] + "," + \
+                        elems[3] + "," + himmelUndGrad[0] + "," + himmelUndGrad[1]
+                outputfile.write(line + "\n")
+            else:
+                outputfileError = open(outputPath + os.sep + fileNameError, 'a+')
+                outputfileError.write(elem + "\n")
+                outputfileError.close()
+        else:
+            outputfile.write(elem + "\n")
+    outputfile.close()
+    
 def writeBlankFile(outputPath, container, filename):
     outputfile = open(outputPath + os.sep + filename, 'w')
     for elem in container:
         outputfile.write(elem)
-    outputfile.close()
+    outputfile.close()    
 
 if __name__ == "__main__":
     debugFlag = False
@@ -96,8 +115,9 @@ if __name__ == "__main__":
         else:
             unknmarkcontainer.append(line)
     
-    writeBlankFile(outputdir, fotomarkcontainer, inputfile +"_fotomarker.csv")
-    writeBlankFile(outputdir, passmarkcontainer, inputfile +"_passmarker.txt")
-    writeBlankFile(outputdir, unknmarkcontainer, inputfile +"_error.txt")
-            
-    jmlcreate.createJML(outputdir + os.sep + inputfile +"_objects.jml", objemarkcontainer, seqdelem)
+    errorFileName = "_error.txt"
+    writeBlankFile(outputdir, unknmarkcontainer, inputfile + errorFileName)
+    writeFotoMarker(outputdir, fotomarkcontainer, inputfile + "_fotomarker.csv", inputfile + errorFileName)
+    writeBlankFile(outputdir, passmarkcontainer, inputfile + "_passmarker.txt")
+                
+    jmlcreate.createJML(outputdir, inputfile +"_objects.jml", objemarkcontainer, seqdelem, inputfile + errorFileName)
