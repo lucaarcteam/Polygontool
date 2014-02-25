@@ -36,14 +36,49 @@ def createDictFromLines2(lines, seqdelem):
         
     return dictOfObjnr
 
-def checkType(seqtype):
-    types = ["ew-lin", "sts-lin", "pit-lin"]
-    for t in types:
-        if seqtype == t:
-            return True
+def checkType(seqtype, lineTypes):
+    #types = ["ew-lin", "sts-lin", "pit-lin"]
+    if seqtype in lineTypes:
+        return True
     return False
 
+def createLinTypes():
+    f = open("config/linetypes.conf", 'r')
+    lintypes = []
+    
+    for line in f:
+        if line.startswith("#"):
+            continue
+        if len(line.strip()) == 0:
+            continue            
+        lintypes.append(line.strip())
+    
+    return lintypes
+
+def createObjDescriptionDict(lang):
+    f = open("config/objectdescription.conf", 'r')
+    descObjDesc = {}
+    for line in f:
+        if line.startswith("#"):
+            continue
+        if len(line.strip()) == 0:
+            continue
+            
+        parts = line.split(";")
+
+        if lang == "de":
+            descObjDesc[parts[0].strip()] = parts[2].strip()
+        elif lang == "en":
+            descObjDesc[parts[0].strip()] = parts[1].strip()
+        
+    f.close()
+    return descObjDesc
+
 def createJML(outputDir, fileName, container, seqdelem, fileNameError):
+    dictObjDesc_en = createObjDescriptionDict("en")
+    dictObjDesc_de = createObjDescriptionDict("de")
+    linTypes = createLinTypes()
+    
     outputfileError = open(outputDir + os.sep + fileNameError, 'a+')
     
     containerOfObjects = createDictFromLines2(container, seqdelem)
@@ -62,17 +97,28 @@ def createJML(outputDir, fileName, container, seqdelem, fileNameError):
             featureNode = etree.SubElement(featureCollectionNode, 'feature')
             geometryNode = etree.SubElement(featureNode, 'geometry')    
             propIdNode = etree.SubElement(featureNode, 'property', name='project_ID')
+            propDescNode = etree.SubElement(featureNode, 'property', name='description')
+            propBeschNode = etree.SubElement(featureNode, 'property', name='beschreibung')
             
             obj = containerOfObjects[objDate][objKey]
             objName = ""
             
             for seqKey in obj:
                 objName = obj[seqKey][0].split(",")[0].split("-")[0]
+                
+                objDesc = obj[seqKey][0].split(",")[4].strip()
+                if objDesc in dictObjDesc_en.keys():
+                    objDesc = dictObjDesc_en[objDesc]
+                
+                objBesch = obj[seqKey][0].split(",")[4].strip()
+                if objBesch in dictObjDesc_de.keys():
+                    objBesch = dictObjDesc_de[objBesch]
+                
                 isThisaLine = False
                 
                 seq = obj[seqKey]
                 
-                if checkType(str(seq[0].split(",")[4]).strip()):
+                if checkType(str(seq[0].split(",")[4]).strip(), linTypes):
                     isThisaLine = True
                 
                 if not isThisaLine:    
@@ -89,14 +135,14 @@ def createJML(outputDir, fileName, container, seqdelem, fileNameError):
                         linearRingNode = etree.SubElement(outerBoundaryIsNode, '{http://www.opengis.net/gml}LinearRing')
                         coordinatesNode = etree.SubElement(linearRingNode, '{http://www.opengis.net/gml}coordinates')
                     else:
-                        errorMess = "Für Polygon sind mindestens 4 koordinaten notwendig. Vorhanden=%s ObjektName=%s erste Sequenznummer=%s Endung=%s" % (len(seq), objName, seq[0].split(",")[0].split("-")[1], seq[0].split(",")[4])
+                        errorMess = "Für Polygon sind mindestens 4 Koordinaten notwendig. Vorhanden=%s ObjektName=%s erste Sequenznummer=%s Endung=%s" % (len(seq), objName, seq[0].split(",")[0].split("-")[1], seq[0].split(",")[4])
                         outputfileError.write(errorMess + "\n")
                         continue
                 else:
                     if len(seq) >= 2:
                         coordinatesNode = etree.SubElement(lineStringNode, '{http://www.opengis.net/gml}coordinates')
                     else:
-                        errorMess =  "Für Linien sind mindestens 2 koordinaten notwendig. Vorhanden=%s ObjektName=%s erste Sequenznummer=%s Endung=%s" % (len(seq), objName, seq[0].split(",")[0].split("-")[1], seq[0].split(",")[4])
+                        errorMess =  "Für Linien sind mindestens 2 Koordinaten notwendig. Vorhanden=%s ObjektName=%s erste Sequenznummer=%s Endung=%s" % (len(seq), objName, seq[0].split(",")[0].split("-")[1], seq[0].split(",")[4])
                         outputfileError.write(errorMess + "\n")
                         continue
                 i = 0
@@ -111,11 +157,14 @@ def createJML(outputDir, fileName, container, seqdelem, fileNameError):
                     coordinatesList.append(firstline)
                 coordinatesNode.text = "".join(coordinatesList)
                     
-            propIdNode.text = str(objName)   
+            propIdNode.text = str(objName)
+            propDescNode.text = str(objDesc)
+            propBeschNode.text = str(objBesch)
    
     outputfileError.close()
     outFile = open(outputDir + os.sep + fileName, 'w')
     tree.write(outFile, pretty_print=True)    
     
-#if __name__ == "__main__":
+if __name__ == "__main__":
+    createObjDescriptionDict()
     
