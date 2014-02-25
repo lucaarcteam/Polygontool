@@ -11,17 +11,14 @@ def createPM(outputDir, fileName, container, seqdelem, projectname):
         parts = line.split(",")        
         objname = parts[0]
         objNr = objname.split(seqdelem)[0][-3:]
-        print objNr
         
         if not oldObjNr == objNr:
             if not oldObjNr == "":
                 f.close()
-            print "openfile"
             f = open(outputDir + os.sep + projectname + fileName + "_" + objNr + ".txt", 'w')
         
         f.write(line)
-        oldObjNr = objNr
-        
+        oldObjNr = objNr        
     f.close()
         
         
