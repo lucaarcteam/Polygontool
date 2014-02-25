@@ -7,6 +7,7 @@ import fileinput
 import os
 
 import jmlcreate
+import passmarkercreate
 
 def writeFotoMarker(outputPath, container, filename, fileNameError):
     outputfile = open(outputPath + os.sep + filename, 'w')
@@ -115,6 +116,8 @@ if __name__ == "__main__":
             elif seqlength == 3:
                 if seqnumber[0:1] == 'f':
                     fotomarkcontainer.append(line)
+                elif parts[4].strip() == "gcp":
+                    passmarkcontainer.append(line)
                 elif seqnumber[0:1] == 'n':
                     unknmarkcontainer.append(line)
                 else:
@@ -128,6 +131,7 @@ if __name__ == "__main__":
     writeBlankFile(outputdir, unknmarkcontainer, inputfile + errorFileName)
     writeFotoMarker(outputdir, fotomarkcontainer, inputfile + "_fotomarker.csv", inputfile + errorFileName)
     writeBlankFile(outputdir, passmarkcontainer, inputfile + "_passmarker.txt")
+    passmarkercreate.createPM(outputdir, "_passmarker", passmarkcontainer, seqdelem, inputfile)
                 
     jmlcreate.createJML(outputdir, inputfile +"_objects.jml", objemarkcontainer, seqdelem, inputfile + errorFileName)
     
