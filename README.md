@@ -16,7 +16,8 @@ Config files:
 
 <p><b>linetypes.conf</b></p> - this types will be converted to JML-lines, all others to JML-polygons<br>
 
-<p><b>nameconvention.conf</b></p> - you can set here the delemiter between objectnumber and sequenznumber<br>
+<p><b>nameconvention.conf</b></p>
+ - you can set here the delemiter between objectnumber and sequenznumber<br>
  - numberdigits_after_delemiter sets the length of the sequenznumber<br>
  - numberdigits_passmarker sets the length of the sequenznumber to recognise a passmarkerline.<br>
  - passmarkertoken sets which lines will be recognized as passmarkerlines<br>
