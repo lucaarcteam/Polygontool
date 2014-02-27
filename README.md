@@ -14,10 +14,13 @@ Software dependencies:
 Config files:
 =============
 
-<b>linetypes.conf</b> - this types will be converted to JML-lines, all others to JML-polygons<br>
-<b>nameconvention.conf</b> - you can set here the delemiter between objectnumber and sequenznumber<br>
-<b>objectdescription.conf</b> - you can set here the fullnames in english and german for the objecttypes<br>
-<b>xmlheader.xml</b> - template for a empty jml file
+<p><b>linetypes.conf</b></p> - this types will be converted to JML-lines, all others to JML-polygons<br>
+
+<p><b>nameconvention.conf</b></p> - you can set here the delemiter between objectnumber and sequenznumber<br>numberdigits_after_delemiter sets the length of the sequenznumber<br>numberdigits_passmarker sets the length of the sequenznumber to recognise a passmarkerline.<br>
+
+<p><b>objectdescription.conf</b></p> - you can set here the fullnames in english and german for the objecttypes<br>
+
+<p><b>xmlheader.xml</b></p> - template for a empty jml file, do not change anything
 
 
 Program args:

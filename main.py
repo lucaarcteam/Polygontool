@@ -87,6 +87,8 @@ if __name__ == "__main__":
     config = {}
     execfile("config/nameconvention.conf", config)
     seqdelem = str(config['sequencenumber_delemiter'])
+    seqlength_default = int(str(config['numberdigits_after_delemiter']))
+    seqlength_passmarker = int(str(config['numberdigits_passmarker']))
     
     passmarkcontainer = []
     fotomarkcontainer = []
@@ -102,7 +104,15 @@ if __name__ == "__main__":
         line = line.replace('\n', '')
         parts = line.split(",")        
         objname = parts[0]
-        objNr = objname.split(seqdelem)[0][-3:]
+        
+        objparts = objname.split(seqdelem)
+        
+        if len(objparts) > 2:
+            unknmarkcontainer.append(line)
+            continue
+        
+        temp = seqlength_default * -1
+        objNr = objparts[0][temp:]
         
         if not len(parts) == 5:
             unknmarkcontainer.append(line)
@@ -111,9 +121,9 @@ if __name__ == "__main__":
         elif seqdelem in objname:
             seqnumber = objname.split(seqdelem)[1]
             seqlength = len(seqnumber)
-            if seqlength == 2:
+            if seqlength == seqlength_passmarker:
                 passmarkcontainer.append(line)
-            elif seqlength == 3:
+            elif seqlength == seqlength_default:
                 if seqnumber[0:1] == 'f':
                     fotomarkcontainer.append(line)
                 elif parts[4].strip() == "gcp":

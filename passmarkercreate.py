@@ -19,6 +19,8 @@ def createPM(outputDir, fileName, container, seqdelem, projectname):
         
         f.write(line)
         oldObjNr = objNr        
-    f.close()
+    
+    if not f == None:
+        f.close()
         
         
