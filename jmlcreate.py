@@ -11,7 +11,6 @@ def createDictFromLines2(lines, seqdelem):
     oldSeqNr = -2
     
     for line in lines:
-        print line
         lineparts = line.split(",")
         objname = lineparts[0]
         seqsplits = objname.split(seqdelem)

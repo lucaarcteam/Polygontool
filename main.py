@@ -34,15 +34,6 @@ def writeBlankFile(outputPath, container, filename):
         outputfile.write(elem)
     outputfile.close()    
     
-def countLinesInFile(path, filename):
-    count = 0
-    f = open(path + os.sep + filename, 'r')
-    for elem in f:
-        print elem
-        count += 1
-    f.close()
-    return count
-
 if __name__ == "__main__":
     debugFlag = False
     inputfile = ""
@@ -64,8 +55,6 @@ if __name__ == "__main__":
         if opt in ("-o", "--outputdir"):
             outputdir = arg
 
-    #inputfile = "spw131010-03.csv"
-    
     if outputdir == "":
         outputdir = "output" + "_" + inputfile
         if not os.path.exists(outputdir):
@@ -89,7 +78,7 @@ if __name__ == "__main__":
     seqdelem = str(config['sequencenumber_delemiter'])
     seqlength_default = int(str(config['numberdigits_after_delemiter']))
     seqlength_passmarker = int(str(config['numberdigits_passmarker']))
-    
+    passmarkertoken = str(config['passmarkertoken']).strip()
     passmarkcontainer = []
     fotomarkcontainer = []
     objemarkcontainer = []
@@ -103,21 +92,21 @@ if __name__ == "__main__":
         
         line = line.replace('\n', '')
         parts = line.split(",")        
-        objname = parts[0]
+        objname = parts[0].strip()
         
         objparts = objname.split(seqdelem)
         
         if len(objparts) > 2:
-            unknmarkcontainer.append(line)
+            unknmarkcontainer.append("Objectpart has more than two members: " + line)
             continue
         
         temp = seqlength_default * -1
         objNr = objparts[0][temp:]
         
         if not len(parts) == 5:
-            unknmarkcontainer.append(line)
+            unknmarkcontainer.append("Parts length not 5: " + line)
         elif objNr == "xxx":
-            unknmarkcontainer.append(line) 
+            unknmarkcontainer.append("objNr == xxx: " + line) 
         elif seqdelem in objname:
             seqnumber = objname.split(seqdelem)[1]
             seqlength = len(seqnumber)
@@ -126,16 +115,16 @@ if __name__ == "__main__":
             elif seqlength == seqlength_default:
                 if seqnumber[0:1] == 'f':
                     fotomarkcontainer.append(line)
-                elif parts[4].strip() == "gcp":
+                elif parts[4].strip() == passmarkertoken:
                     passmarkcontainer.append(line)
                 elif seqnumber[0:1] == 'n':
-                    unknmarkcontainer.append(line)
+                    unknmarkcontainer.append("Seqnumber contains an n: " + line)
                 else:
                     objemarkcontainer.append(line)
             else:
-                unknmarkcontainer.append(line)
+                unknmarkcontainer.append("seqlength other then configured: " + line)
         else:
-            unknmarkcontainer.append(line)
+            unknmarkcontainer.append("UKNOWN Error: " + line)
     
     errorFileName = "_error.txt"
     writeBlankFile(outputdir, unknmarkcontainer, inputfile + errorFileName)
