@@ -55,15 +55,21 @@ if __name__ == "__main__":
         if opt in ("-o", "--outputdir"):
             outputdir = arg
 
-    if outputdir == "":
-        outputdir = "output" + "_" + inputfile
-        if not os.path.exists(outputdir):
-            os.makedirs(outputdir)
-
     if inputfile == "":
         print 'No inputfile was given. Exiting...'
         sys.exit(2)
-           
+
+    if os.sep in inputfile:
+        inputpathParts = inputfile.split(os.sep)
+        inputfile = inputpathParts[len(inputpathParts)-1]
+
+    if outputdir == "":
+        projpath = os.getcwd()
+        outputdir = projpath + os.sep + "output" + "_" + inputfile + os.sep
+        
+    if not os.path.exists(outputdir):
+        os.makedirs(outputdir)        
+        
     try:
         open(inputfile, 'r')
     except:
