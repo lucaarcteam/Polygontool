@@ -65,9 +65,11 @@ def createObjDescriptionDict(lang):
             continue
             
         parts = line.split(";")
-
+        
         if lang == "de":
             descObjDesc[parts[0].strip()] = parts[2].strip()
+        elif lang == "it":
+            descObjDesc[parts[0].strip()] = parts[3].strip()
         elif lang == "en":
             descObjDesc[parts[0].strip()] = parts[1].strip()
         
@@ -77,6 +79,7 @@ def createObjDescriptionDict(lang):
 def createJML(outputDir, fileName, container, seqdelem, fileNameError):
     dictObjDesc_en = createObjDescriptionDict("en")
     dictObjDesc_de = createObjDescriptionDict("de")
+    dictObjDesc_it = createObjDescriptionDict("it")
     linTypes = createLinTypes()
     
     outputfileError = open(outputDir + os.sep + fileNameError, 'a+')
@@ -94,16 +97,23 @@ def createJML(outputDir, fileName, container, seqdelem, fileNameError):
     for objDate in containerOfObjects:
         # -- LOOP each object
         for objKey in containerOfObjects[objDate]:
-            featureNode = etree.SubElement(featureCollectionNode, 'feature')
-            geometryNode = etree.SubElement(featureNode, 'geometry')    
-            propIdNode = etree.SubElement(featureNode, 'property', name='project_ID')
-            propDescNode = etree.SubElement(featureNode, 'property', name='description')
-            propBeschNode = etree.SubElement(featureNode, 'property', name='beschreibung')
+            #featureNode = etree.SubElement(featureCollectionNode, 'feature')
+            #geometryNode = etree.SubElement(featureNode, 'geometry')    
+            #propIdNode = etree.SubElement(featureNode, 'property', name='project_ID')
+            #propDescNode = etree.SubElement(featureNode, 'property', name='description')
+            #propBeschNode = etree.SubElement(featureNode, 'property', name='beschreibung')
             
             obj = containerOfObjects[objDate][objKey]
             objName = ""
             
             for seqKey in obj:
+                featureNode = etree.SubElement(featureCollectionNode, 'feature')
+                geometryNode = etree.SubElement(featureNode, 'geometry')    
+                propIdNode = etree.SubElement(featureNode, 'property', name='project_ID')
+                propDescNode = etree.SubElement(featureNode, 'property', name='description')
+                propBeschNode = etree.SubElement(featureNode, 'property', name='beschreibung')
+                propDescITNode = etree.SubElement(featureNode, 'property', name='descrizione')
+                
                 objName = obj[seqKey][0].split(",")[0].split("-")[0]
                 
                 objDesc = obj[seqKey][0].split(",")[4].strip()
@@ -113,6 +123,10 @@ def createJML(outputDir, fileName, container, seqdelem, fileNameError):
                 objBesch = obj[seqKey][0].split(",")[4].strip()
                 if objBesch in dictObjDesc_de.keys():
                     objBesch = dictObjDesc_de[objBesch]
+                    
+                objDescIT = obj[seqKey][0].split(",")[4].strip()
+                if objDescIT in dictObjDesc_it.keys():
+                    objDescIT = dictObjDesc_it[objDescIT]
                 
                 isThisaLine = False
                 
@@ -157,9 +171,10 @@ def createJML(outputDir, fileName, container, seqdelem, fileNameError):
                     coordinatesList.append(firstline)
                 coordinatesNode.text = "".join(coordinatesList)
                     
-            propIdNode.text = str(objName)
-            propDescNode.text = str(objDesc)
-            propBeschNode.text = str(objBesch)
+                propIdNode.text = str(objName)
+                propDescNode.text = str(objDesc)
+                propBeschNode.text = str(objBesch)
+                propDescITNode.text = str(objDescIT)
    
     outputfileError.close()
     outFile = open(outputDir + os.sep + fileName, 'w')

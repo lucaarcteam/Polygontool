@@ -140,5 +140,5 @@ if __name__ == "__main__":
                 
     jmlcreate.createJML(outputdir, inputfile +"_objects.jml", objemarkcontainer, seqdelem, inputfile + errorFileName)
     
-    print "\nEine Fehlerdatei: %s wurde geschrieben!\n" % \
-        (outputdir + os.sep + inputfile + errorFileName)
+    print "\nEine Fehlerdatei mit dem Pfad: %s wurde geschrieben!\n" % \
+        (outputdir + inputfile + errorFileName)
